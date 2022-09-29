@@ -7,6 +7,7 @@ namespace ItemMarketplace.Database
     {
         public MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options): base(options)
         {
+            Database.EnsureCreated();
         }
 
         public DbSet<Item> Items { get; set; }
