@@ -1,4 +1,8 @@
+using ItemMarketplace.DAL.Implementation;
+using ItemMarketplace.DAL.Interface;
 using ItemMarketplace.Database;
+using ItemMarketplace.Services.Implementation;
+using ItemMarketplace.Services.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +33,11 @@ namespace ItemMarketplace
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ItemMarketplace", Version = "v1" });
             });
+
+            services.AddScoped<ISaleRepository, SaleRepository>();
+            services.AddScoped<IItemRepository, ItemRepository>();
+
+            services.AddScoped<IAuctionService, AuctionService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

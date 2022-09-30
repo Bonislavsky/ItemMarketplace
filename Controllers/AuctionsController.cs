@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ItemMarketplace.Database;
 using ItemMarketplace.Models;
+using ItemMarketplace.Services.Interface;
+using ItemMarketplace.Domain.Enum;
 
 namespace ItemMarketplace.Controllers
 {
@@ -15,22 +17,24 @@ namespace ItemMarketplace.Controllers
     public class AuctionsController : ControllerBase
     {
         private readonly MarketplaceDbContext _context;
+        private readonly IAuctionService _auctionService;
 
-        public AuctionsController(MarketplaceDbContext context)
+        public AuctionsController(MarketplaceDbContext context, IAuctionService auctionService)
         {
             _context = context;
+            _auctionService = auctionService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sale>>> GetSales()
+        public async Task<ActionResult<List<Sale>>> GetSales()
         {
-            return await _context.Sales.ToListAsync();
+            return await _auctionService.GetSales();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Sale>> GetSale(int id)
         {
-            var sale = await _context.Sales.FindAsync(id);
+            var sale = await _auctionService.GetSale(id);
 
             if (sale == null)
             {
@@ -40,19 +44,29 @@ namespace ItemMarketplace.Controllers
             return sale;
         }
 
+        /// <summary>
+        /// something text 
+        /// </summary>
+        /// <param name="marketStatus"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        public ActionResult<List<Sale>> GetSortedSales(MarketStatus marketStatus)
+        {           
+            return NoContent();
+        }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSale(int id, Sale sale)
+        public IActionResult PutSale(int id, Sale sale)
         {
             if (id != sale.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(sale).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                _auctionService.UpdateSale(sale);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -72,24 +86,20 @@ namespace ItemMarketplace.Controllers
         [HttpPost]
         public async Task<ActionResult<Sale>> PostSale(Sale sale)
         {
-            _context.Sales.Add(sale);
-            await _context.SaveChangesAsync();
+            await _auctionService.CreateSale(sale);
 
-            //return CreatedAtAction("GetSale", new { id = sale.Id }, sale);
             return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSale(int id)
         {
-            var sale = await _context.Sales.FindAsync(id);
-            if (sale == null)
+            if (await _auctionService.GetSale(id) == null)
             {
                 return NotFound();
             }
 
-            _context.Sales.Remove(sale);
-            await _context.SaveChangesAsync();
+            _auctionService.DeleteSale(id);
 
             return NoContent();
         }

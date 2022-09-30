@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ItemMarketplace.DAL.Interface
 {
-    public interface ISaleRepository : IBaseRepository<Sale>
+    public interface IItemRepository : IBaseRepository<Item>
     {
     }
 }

@@ -18,7 +18,7 @@ namespace ItemMarketplace.DAL.Implementation
             _Dbase = ctx;
         }
 
-        public async Task<IEnumerable<Sale>> GetAll()
+        public async Task<List<Sale>> GetAll()
         {
             return await _Dbase.Sales.ToListAsync();
         }

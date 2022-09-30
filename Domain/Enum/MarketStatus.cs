@@ -2,7 +2,7 @@
 {
     public enum MarketStatus
     {
-        None,
+        None = 1,
         Canceled,
         Finished,
         Active
