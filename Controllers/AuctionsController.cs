@@ -28,13 +28,13 @@ namespace ItemMarketplace.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Sale>>> GetSales()
         {
-            return await _auctionService.GetSales();
+            return await _auctionService.GetListEntity();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Sale>> GetSale(int id)
         {
-            var sale = await _auctionService.GetSale(id);
+            var sale = await _auctionService.GetEntityById(id);
 
             if (sale == null)
             {
@@ -48,30 +48,26 @@ namespace ItemMarketplace.Controllers
         /// <remarks></remarks>
         /// <param name="salesNames">
         /// sales names.
-        /// 
-        /// exemple: salesNames = nft
-        /// 
-        /// return: list where name Item.name == nft
         /// </param>
         /// <param name="status">
-        /// Default : Active
-        /// 
         /// 1 - None 2 - Canceled 3 - Finished 4 - Active
         /// </param>
         /// <param name="sort_key">
-        /// Default : CreatedDt
-        /// 
         /// 1 - CreatedDt 2 - Price
         /// </param>
         /// <param name="sort_order">
-        /// Default : ASC
-        /// 
         /// 1 - ASC 2 - DESC
         /// </param>
         /// <returns>Sorting List Sales(by key: CreatedDt, Price, by order: ASC, DESC)</returns>
+        /// <response code="400">no options selected:status/sort_key/sort_order</response>    
+        [ProducesResponseType(400)]
         [HttpGet("SortedSales/{salesNames}")]
         public async Task<ActionResult<List<Sale>>> GetSortedSales(string salesNames, MarketStatus status, SortingBy sort_key, OrderBy sort_order)
         {
+            if (status == 0 && sort_key == 0 && sort_order == 0)
+            {
+                return BadRequest();
+            }
             return await _auctionService.GetSortingSales(salesNames, status, sort_key, sort_order);
         }
 
@@ -85,7 +81,7 @@ namespace ItemMarketplace.Controllers
 
             try
             {
-                _auctionService.UpdateSale(sale);
+                _auctionService.UpdateEntity(sale);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -105,20 +101,20 @@ namespace ItemMarketplace.Controllers
         [HttpPost]
         public async Task<ActionResult<Sale>> PostSale(Sale sale)
         {
-            await _auctionService.CreateSale(sale);
+            await _auctionService.CreateEntity(sale);
 
-            return CreatedAtAction("GetSale", new { id = sale.Id }, sale);
+            return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSale(int id)
         {
-            if (await _auctionService.GetSale(id) == null)
+            if (await _auctionService.GetEntityById(id) == null)
             {
                 return NotFound();
             }
 
-            _auctionService.DeleteSale(id);
+            _auctionService.DeleteEntityById(id);
 
             return NoContent();
         }

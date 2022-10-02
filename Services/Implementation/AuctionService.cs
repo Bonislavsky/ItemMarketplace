@@ -12,37 +12,35 @@ namespace ItemMarketplace.Services.Implementation
     public class AuctionService : IAuctionService
     {
         private readonly ISaleRepository _saleRepository;
-        private readonly IItemRepository _itemRepository;
 
-        public AuctionService(ISaleRepository saleRepository, IItemRepository itemRepository)
+        public AuctionService(ISaleRepository saleRepository)
         {
             _saleRepository = saleRepository;
-            _itemRepository = itemRepository;
         }
 
-        public async Task<List<Sale>> GetSales()
+        public async Task<List<Sale>> GetListEntity()
         {
             return await _saleRepository.GetAll();
         }
 
 
-        public async Task<Sale> GetSale(int id)
+        public async Task<Sale> GetEntityById(int id)
         {
             return await _saleRepository.GetById(id);
         }
 
-        public void UpdateSale(Sale sale)
+        public void UpdateEntity(Sale sale)
         {
             _saleRepository.Update(sale);
         }
 
-        public async Task<Sale> CreateSale(Sale sale)
+        public async Task<Sale> CreateEntity(Sale sale)
         {
             sale.CreatedDt = DateTime.Now;
             return await _saleRepository.Create(sale);
         }
 
-        public void DeleteSale(int id)
+        public void DeleteEntityById(int id)
         {
             _saleRepository.Delete(id);
         }

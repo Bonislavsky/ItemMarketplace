@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ItemMarketplace.Database;
 using ItemMarketplace.Models;
+using ItemMarketplace.Services.Interface;
 
 namespace ItemMarketplace.Controllers
 {
@@ -15,48 +16,48 @@ namespace ItemMarketplace.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly MarketplaceDbContext _context;
+        private readonly IItemService _itemService;
 
-        public ItemsController(MarketplaceDbContext context)
+        public ItemsController(MarketplaceDbContext context, IItemService itemService)
         {
             _context = context;
+            _itemService = itemService;
         }
 
         // GET: api/Items
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
-            return await _context.Items.ToListAsync();
+            return await _itemService.GetListEntity();
         }
 
         // GET: api/Items/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Item>> GetItem(int id)
         {
-            var item = await _context.Items.FindAsync(id);
+            var sale = await _itemService.GetEntityById(id);
 
-            if (item == null)
+            if (sale == null)
             {
                 return NotFound();
             }
 
-            return item;
+            return sale;
         }
 
         // PUT: api/Items/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItem(int id, Item item)
+        public IActionResult PutItem(int id, Item item)
         {
             if (id != item.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(item).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                _itemService.UpdateEntity(item);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -78,24 +79,21 @@ namespace ItemMarketplace.Controllers
         [HttpPost]
         public async Task<ActionResult<Item>> PostItem(Item item)
         {
-            _context.Items.Add(item);
-            await _context.SaveChangesAsync();
+            await _itemService.CreateEntity(item);
 
-            return CreatedAtAction("GetItem", new { id = item.Id }, item);
+            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item);
         }
 
         // DELETE: api/Items/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(int id)
         {
-            var item = await _context.Items.FindAsync(id);
-            if (item == null)
+            if (await _itemService.GetEntityById(id) == null)
             {
                 return NotFound();
             }
 
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
+            _itemService.DeleteEntityById(id);
 
             return NoContent();
         }

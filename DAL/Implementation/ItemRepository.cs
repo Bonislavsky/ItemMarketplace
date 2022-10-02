@@ -1,5 +1,7 @@
 ﻿using ItemMarketplace.DAL.Interface;
+using ItemMarketplace.Database;
 using ItemMarketplace.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,29 +11,41 @@ namespace ItemMarketplace.DAL.Implementation
 {
     public class ItemRepository : IItemRepository
     {
-        public Task<Item> Create(Item sale)
+        private readonly MarketplaceDbContext _Dbase;
+
+        public ItemRepository(MarketplaceDbContext ctx)
         {
-            throw new NotImplementedException();
+            _Dbase = ctx;
         }
 
-        public void Delete(int id)
+        public async Task<List<Item>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _Dbase.Items.ToListAsync();
         }
 
-        public Task<List<Item>> GetAll()
+        public async Task<Item> Create(Item item)
         {
-            throw new NotImplementedException();
+            await _Dbase.Items.AddAsync(item);
+            await _Dbase.SaveChangesAsync();
+            return item;
         }
 
-        public Task<Item> GetById(int id)
+        public async Task<Item> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _Dbase.Items.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public void Update(Item sale)
+        public async void Update(Item item)
         {
-            throw new NotImplementedException();
+            _Dbase.Attach(item).State = EntityState.Modified;
+            await _Dbase.SaveChangesAsync();
+        }
+
+        public async void Delete(int id)
+        {
+            var model = await _Dbase.Items.FirstOrDefaultAsync(e => e.Id == id);
+            _Dbase.Items.Remove(model);
+            await _Dbase.SaveChangesAsync();
         }
     }
 }

@@ -49,7 +49,7 @@ namespace ItemMarketplace.DAL.Implementation
             await _Dbase.SaveChangesAsync();
         }   
 
-        public async Task<List<Sale>> GetSortedSalesByItemName(string itemName, MarketStatus status = MarketStatus.Active, SortingBy sort_key = SortingBy.CreatedDt, OrderBy sort_order = OrderBy.ACS)
+        public async Task<List<Sale>> GetSortedSalesByItemName(string itemName, MarketStatus status, SortingBy sort_key, OrderBy sort_order)
         {
             var ListSoles = await _Dbase.Sales
                 .Where(b => 

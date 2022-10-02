@@ -44,6 +44,7 @@ namespace ItemMarketplace
             services.AddScoped<IItemRepository, ItemRepository>();
 
             services.AddScoped<IAuctionService, AuctionService>();
+            services.AddScoped<IItemService, ItemService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
