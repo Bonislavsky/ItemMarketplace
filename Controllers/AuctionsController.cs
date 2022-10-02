@@ -28,20 +28,35 @@ namespace ItemMarketplace.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Sale>>> GetSales()
         {
-            return await _auctionService.GetListEntity();
+            try
+            {
+                return await _auctionService.GetListEntity();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Sale>> GetSale(int id)
         {
-            var sale = await _auctionService.GetEntityById(id);
-
-            if (sale == null)
+            try
             {
-                return NotFound();
-            }
+                var sale = await _auctionService.GetEntityById(id);
 
-            return sale;
+                if (sale == null)
+                {
+                    return NotFound();
+                }
+
+                return sale;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         /// <summary>Get Sorting Sales</summary>
@@ -68,7 +83,14 @@ namespace ItemMarketplace.Controllers
             {
                 return BadRequest();
             }
-            return await _auctionService.GetSortingSales(salesNames, status, sort_key, sort_order);
+            try
+            {
+                return await _auctionService.GetSortingSales(salesNames, status, sort_key, sort_order);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [HttpPut("{id}")]
@@ -101,22 +123,37 @@ namespace ItemMarketplace.Controllers
         [HttpPost]
         public async Task<ActionResult<Sale>> PostSale(Sale sale)
         {
-            await _auctionService.CreateEntity(sale);
+            try
+            {
+                await _auctionService.CreateEntity(sale);
 
-            return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
+                return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSale(int id)
         {
-            if (await _auctionService.GetEntityById(id) == null)
+            try
             {
-                return NotFound();
+                if (await _auctionService.GetEntityById(id) == null)
+                {
+                    return NotFound();
+                }
+
+                _auctionService.DeleteEntityById(id);
+
+                return NoContent();
             }
+            catch (Exception)
+            {
 
-            _auctionService.DeleteEntityById(id);
-
-            return NoContent();
+                throw;
+            }
         }
 
         private bool SaleExists(int id)
