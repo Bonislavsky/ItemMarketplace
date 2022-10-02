@@ -44,16 +44,35 @@ namespace ItemMarketplace.Controllers
             return sale;
         }
 
-        /// <summary>
-        /// something text 
-        /// </summary>
-        /// <param name="marketStatus"></param>
-        /// <returns></returns>
-
-        [HttpGet]
-        public ActionResult<List<Sale>> GetSortedSales(MarketStatus marketStatus)
-        {           
-            return NoContent();
+        /// <summary>Get Sorting Sales</summary>
+        /// <remarks></remarks>
+        /// <param name="salesNames">
+        /// sales names.
+        /// 
+        /// exemple: salesNames = nft
+        /// 
+        /// return: list where name Item.name == nft
+        /// </param>
+        /// <param name="status">
+        /// Default : Active
+        /// 
+        /// 1 - None 2 - Canceled 3 - Finished 4 - Active
+        /// </param>
+        /// <param name="sort_key">
+        /// Default : CreatedDt
+        /// 
+        /// 1 - CreatedDt 2 - Price
+        /// </param>
+        /// <param name="sort_order">
+        /// Default : ASC
+        /// 
+        /// 1 - ASC 2 - DESC
+        /// </param>
+        /// <returns>Sorting List Sales(by key: CreatedDt, Price, by order: ASC, DESC)</returns>
+        [HttpGet("SortedSales/{salesNames}")]
+        public async Task<ActionResult<List<Sale>>> GetSortedSales(string salesNames, MarketStatus status, SortingBy sort_key, OrderBy sort_order)
+        {
+            return await _auctionService.GetSortingSales(salesNames, status, sort_key, sort_order);
         }
 
         [HttpPut("{id}")]
@@ -88,7 +107,7 @@ namespace ItemMarketplace.Controllers
         {
             await _auctionService.CreateSale(sale);
 
-            return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
+            return CreatedAtAction("GetSale", new { id = sale.Id }, sale);
         }
 
         [HttpDelete("{id}")]

@@ -2,7 +2,7 @@
 {
     public enum SortingBy
     {
-        ASC = 1,
-        DESC
+        CreatedDt = 1,
+        Price
     }
 }

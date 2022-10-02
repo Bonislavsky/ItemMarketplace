@@ -1,4 +1,5 @@
 ﻿using ItemMarketplace.DAL.Interface;
+using ItemMarketplace.Domain.Enum;
 using ItemMarketplace.Models;
 using ItemMarketplace.Services.Interface;
 using System;
@@ -37,6 +38,7 @@ namespace ItemMarketplace.Services.Implementation
 
         public async Task<Sale> CreateSale(Sale sale)
         {
+            sale.CreatedDt = DateTime.Now;
             return await _saleRepository.Create(sale);
         }
 
@@ -44,5 +46,11 @@ namespace ItemMarketplace.Services.Implementation
         {
             _saleRepository.Delete(id);
         }
+
+        public async Task<List<Sale>> GetSortingSales(string name, MarketStatus status, SortingBy sort_key, OrderBy sort_order)
+        {
+            return await _saleRepository.GetSortedSalesByItemName(name, status, sort_key, sort_order);
+        }
     }
 }
+    

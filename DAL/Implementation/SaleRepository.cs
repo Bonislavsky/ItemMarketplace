@@ -1,5 +1,6 @@
 ﻿using ItemMarketplace.DAL.Interface;
 using ItemMarketplace.Database;
+using ItemMarketplace.Domain.Enum;
 using ItemMarketplace.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -46,6 +47,40 @@ namespace ItemMarketplace.DAL.Implementation
             var model = await _Dbase.Sales.FirstOrDefaultAsync(e => e.Id == id);
             _Dbase.Sales.Remove(model);
             await _Dbase.SaveChangesAsync();
+        }   
+
+        public async Task<List<Sale>> GetSortedSalesByItemName(string itemName, MarketStatus status = MarketStatus.Active, SortingBy sort_key = SortingBy.CreatedDt, OrderBy sort_order = OrderBy.ACS)
+        {
+            var ListSoles = await _Dbase.Sales
+                .Where(b => 
+                    _Dbase.Items.Any(a => a.Id == b.ItemId && a.Name.ToLower().Equals(itemName) && b.Status == status))
+                .ToListAsync();
+
+            switch (sort_key)
+            {
+                case SortingBy.CreatedDt:
+                    if (sort_order == OrderBy.ACS)
+                    {
+                        ListSoles.Sort((x, y) => x.CreatedDt.CompareTo(y.CreatedDt));
+                    }
+                    else if (sort_order == OrderBy.DESC)
+                    {
+                        ListSoles.Sort((x, y) => y.CreatedDt.CompareTo(x.CreatedDt));
+                    }
+                    break;
+
+                case SortingBy.Price:
+                    if (sort_order == OrderBy.ACS)
+                    {
+                        ListSoles.Sort((x, y) => x.Price.CompareTo(y.Price));
+                    }
+                    else if (sort_order == OrderBy.DESC)
+                    {
+                        ListSoles.Sort((x, y) => y.Price.CompareTo(x.Price));
+                    }
+                    break;
+            }
+            return ListSoles;
         }
     }
 }
