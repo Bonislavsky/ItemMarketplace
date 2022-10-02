@@ -15,7 +15,10 @@ swagger/index.html:
 
 method: 
 GET(/api/Auctions) - return List<sale>
+![image](https://user-images.githubusercontent.com/108452138/193470737-8e3db278-60dd-4a72-b3d4-1eb8b2af2026.png)
+
 POST(/api/Auctions) - create => return Sale
+
 GET(/api/Auctions/{id}) - return Sale by Id
 PUT(/api/Auctions/{id}) - change Sale by Id
 DELETE(/api/Auctions/{id}) - Delete Sale by Id
