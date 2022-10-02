@@ -64,7 +64,7 @@ namespace ItemMarketplace.Controllers
         [HttpGet("SortedSales/{salesNames}")]
         public async Task<ActionResult<List<Sale>>> GetSortedSales(string salesNames, MarketStatus status, SortingBy sort_key, OrderBy sort_order)
         {
-            if (status == 0 && sort_key == 0 && sort_order == 0)
+            if (status == 0 || sort_key == 0 || sort_order == 0)
             {
                 return BadRequest();
             }
@@ -74,7 +74,7 @@ namespace ItemMarketplace.Controllers
         [HttpPut("{id}")]
         public IActionResult PutSale(int id, Sale sale)
         {
-            if (id != sale.Id)
+            if (id != sale.Id || !SaleExists(sale.Id))
             {
                 return BadRequest();
             }

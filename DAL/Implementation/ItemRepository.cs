@@ -35,13 +35,13 @@ namespace ItemMarketplace.DAL.Implementation
             return await _Dbase.Items.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async void Update(Item item)
+        public async Task Update(Item item)
         {
             _Dbase.Attach(item).State = EntityState.Modified;
             await _Dbase.SaveChangesAsync();
         }
 
-        public async void Delete(int id)
+        public async Task Delete(int id)
         {
             var model = await _Dbase.Items.FirstOrDefaultAsync(e => e.Id == id);
             _Dbase.Items.Remove(model);

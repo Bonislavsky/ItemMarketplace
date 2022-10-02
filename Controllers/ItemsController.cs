@@ -24,14 +24,12 @@ namespace ItemMarketplace.Controllers
             _itemService = itemService;
         }
 
-        // GET: api/Items
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
             return await _itemService.GetListEntity();
         }
 
-        // GET: api/Items/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Item>> GetItem(int id)
         {
@@ -45,12 +43,10 @@ namespace ItemMarketplace.Controllers
             return sale;
         }
 
-        // PUT: api/Items/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public IActionResult PutItem(int id, Item item)
         {
-            if (id != item.Id)
+            if (id != item.Id || !ItemExists(item.Id))
             {
                 return BadRequest();
             }
@@ -73,9 +69,6 @@ namespace ItemMarketplace.Controllers
 
             return NoContent();
         }
-
-        // POST: api/Items
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Item>> PostItem(Item item)
         {
@@ -84,7 +77,6 @@ namespace ItemMarketplace.Controllers
             return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item);
         }
 
-        // DELETE: api/Items/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(int id)
         {

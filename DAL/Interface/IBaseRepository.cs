@@ -10,7 +10,7 @@ namespace ItemMarketplace.DAL.Interface
         Task<List<T>> GetAll();
         Task<T> GetById(int id);
         Task<T> Create(T sale);
-        void Update(T sale);
-        void Delete(int id);
+        Task Update(T sale);
+        Task Delete(int id);
     }
 }
